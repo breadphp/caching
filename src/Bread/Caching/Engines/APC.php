@@ -37,12 +37,12 @@ class APC implements Caching\Interfaces\Engine
 
     public function delete($pattern)
     {
-        $iterator = new APCIterator('user', $pattern, APC_ITER_VALUE);
+        $iterator = new APCIterator($pattern, APC_ITER_VALUE);
         return apc_delete($iterator) ? Promises\When::resolve($pattern) : Promises\When::reject($pattern);
     }
 
     public function clear()
     {
-        return apc_clear_cache('user') ? Promises\When::resolve() : Promises\When::reject();
+        return apc_clear_cache() ? Promises\When::resolve() : Promises\When::reject();
     }
 }
