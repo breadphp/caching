@@ -23,7 +23,7 @@ class APC implements Caching\Interfaces\Engine
 
     public function fetch($key)
     {
-        $result = apc_fetch($key, $success);
+        $result = apcu_fetch($key, $success);
         if (!$success) {
             return Promises\When::reject($key);
         }
@@ -32,17 +32,22 @@ class APC implements Caching\Interfaces\Engine
 
     public function store($key, $var)
     {
-        return apc_store($key, $var) ? Promises\When::resolve($var) : Promises\When::reject($key);
+        return apcu_store($key, $var) ? Promises\When::resolve($var) : Promises\When::reject($key);
     }
 
     public function delete($pattern)
     {
         $iterator = new APCIterator($pattern, APC_ITER_VALUE);
-        return apc_delete($iterator) ? Promises\When::resolve($pattern) : Promises\When::reject($pattern);
+        return apcu_delete($iterator) ? Promises\When::resolve($pattern) : Promises\When::reject($pattern);
     }
 
     public function clear()
     {
-        return apc_clear_cache() ? Promises\When::resolve() : Promises\When::reject();
+        return apcu_clear_cache() ? Promises\When::resolve() : Promises\When::reject();
+    }
+
+    public function info()
+    {
+        return apcu_cache_info();
     }
 }

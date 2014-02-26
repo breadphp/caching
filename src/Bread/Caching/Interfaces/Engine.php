@@ -24,4 +24,6 @@ interface Engine
     public function delete($pattern);
 
     public function clear();
+
+    public function info();
 }

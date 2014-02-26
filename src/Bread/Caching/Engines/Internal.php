@@ -21,17 +21,24 @@ class Internal implements Caching\Interfaces\Engine
 {
 
     private $data = array();
+    private $nhits = 0;
+    private $nmisses = 0;
+    private $ninserts = 0;
+    private $nexpunges = 0;
 
     public function fetch($key)
     {
         if (!isset($this->data[$key])) {
+            $this->nmisses++;
             return Promises\When::reject($key);
         }
+        $this->nhits++;
         return Promises\When::resolve($this->data[$key]);
     }
 
     public function store($key, $value)
     {
+        $this->ninserts++;
         $this->data[$key] = $value;
         return Promises\When::resolve($value);
     }
@@ -46,7 +53,28 @@ class Internal implements Caching\Interfaces\Engine
 
     public function clear()
     {
+        $this->nexpunges++;
         $this->data = array();
         return Promises\When::resolve();
+    }
+
+    public function info()
+    {
+        return array(
+            'nslots' => null,
+            'ttl' => -1,
+            'nhits' => $this->nhits,
+            'nmisses' => $this->nmisses,
+            'ninserts' => $this->ninserts,
+            'nentries' => count($this->data),
+            'nexpunges' => $this->nexpunges,
+            'stime' => null,
+            'mem_size' => -1,
+            'file_upload_progress' => null,
+            'memory_type' => 'array',
+            'cache_list' => $this->data,
+            'deleted_list' => array(),
+            'slot_distribution' => array()
+        );
     }
 }

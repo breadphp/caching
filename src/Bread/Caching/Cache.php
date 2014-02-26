@@ -21,7 +21,7 @@ class Cache extends Singleton
 
     public static function factory()
     {
-        if (class_exists('APCIterator')) {
+        if (function_exists('apcu_enabled') && apcu_enabled()) {
             return new Engines\APC();
         }
         return new Engines\Internal();
